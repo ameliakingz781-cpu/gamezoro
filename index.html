@@ -809,18 +809,24 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 
 <script>
 const games=[
-{id:1,title:"Om Nom Run",cat:"Arcade",emoji:"🐸",rating:4.8,plays:"8.2M",likes:"320K",badge:"🔥 Hot",embedUrl:"https://games.cdn.famobi.com/html5games/o/om-nom-run/v1240/?fg_domain=play.famobi.com&fg_aid=A1000-1&fg_uid=gamezoro-user&fg_pid=gamezoro-pid&fg_beat=729",desc:"Run alongside Om Nom in his famous adventure, now finally in immersive and full-responsive HTML5. Try to run as far as possible by avoiding the dangerous obstacles and enemies, collect all coins and transform Om Nom into the fastest runner possible. Use the power-ups as smart as possible to explore the beautiful world with all its beautiful areas, but be aware of the dangers that lurk inside of them. Are you ready to explore the world of Om Nom Run and reach the highest of highscores?",tags:["Runner","Arcade","Kids","Coins","Mobile","HTML5"]},
-{id:2,title:"GameMonetize Game",cat:"Action",emoji:"🎮",rating:4.7,plays:"1.2M",likes:"48K",badge:"🆕 New",embedUrl:"https://html5.gamemonetize.co/52h9w7nwvg18qshzgzreq6h95cm71mc6/",desc:"An exciting licensed HTML5 game from GameMonetize. Enjoy smooth gameplay and amazing action directly in your browser — no download, no installation needed!",tags:["Action","HTML5","Mobile","Instant Play"]},
-{id:3,title:"Monster Survivors",cat:"Arcade",emoji:"👾",rating:4.8,plays:"980K",likes:"42K",badge:"🔥 Hot",embedUrl:"https://html5.gamemonetize.co/oj8epbslbmqcqvw27h2cklync5nigm97/",desc:"Monster Survivors is an exciting action-packed survival game where players must fight against endless waves of dangerous monsters. Set in a dark and mysterious world, your main goal is simple — survive as long as possible.",tags:["Arcade","Survival","Action","Monsters","HTML5","Mobile"]},
+{id:1,title:"Om Nom Run",cat:"Arcade",thumb:"https://img.gamemonetize.com/iub7vrm4d5d16wz9kzuqtcnx2x7jnqpv/512x384.jpg",rating:4.8,plays:"8.2M",badge:"🔥 Hot",embedUrl:"https://games.cdn.famobi.com/html5games/o/om-nom-run/v1240/?fg_domain=play.famobi.com&fg_aid=A1000-1&fg_uid=gamezoro-user&fg_pid=gamezoro-pid&fg_beat=729",desc:"Run alongside Om Nom in his famous adventure, now finally in immersive and full-responsive HTML5. Try to run as far as possible by avoiding the dangerous obstacles and enemies, collect all coins and transform Om Nom into the fastest runner possible.",tags:["Runner","Arcade","Kids","Mobile"]},
+{id:2,title:"Monster Survivors",cat:"Arcade",thumb:"https://img.gamemonetize.com/oj8epbslbmqcqvw27h2cklync5nigm97/512x384.jpg",rating:4.8,plays:"980K",badge:"🔥 Hot",embedUrl:"https://html5.gamemonetize.co/oj8epbslbmqcqvw27h2cklync5nigm97/",desc:"Monster Survivors is an exciting action-packed survival game where players must fight against endless waves of dangerous monsters. Set in a dark and mysterious world, your main goal is simple — survive as long as possible.",tags:["Arcade","Survival","Action","Monsters"]},
+{id:3,title:"Action Game",cat:"Action",thumb:"https://img.gamemonetize.com/52h9w7nwvg18qshzgzreq6h95cm71mc6/512x384.jpg",rating:4.7,plays:"1.2M",badge:"🆕 New",embedUrl:"https://html5.gamemonetize.co/52h9w7nwvg18qshzgzreq6h95cm71mc6/",desc:"An exciting licensed HTML5 action game. Enjoy smooth gameplay and amazing action directly in your browser — no download, no installation needed!",tags:["Action","HTML5","Mobile"]},
 ];
 
 let currentGame=null,userLoggedIn=false,userName="",favGames=new Set(),darkMode=true,visibleCount=12,currentFilter="All",currentSearch="";
 
 function gbg(cat){const m={Racing:['#1e1060','#0d3060'],Puzzle:['#200d60','#400d20'],Adventure:['#0a2d1a','#0a1a2d'],Action:['#2d0a0a','#1a0a2d'],Strategy:['#1a1a0a','#0a1a2d'],Shooting:['#0a1a0d','#0a0d1a'],Simulation:['#0a2d1a','#1a2d0a'],Zombie:['#0d1a0a','#1a0a0a'],Chess:['#1a1a1a','#2d2d2d'],Idle:['#1a0a2d','#0a1a2d'],Arcade:['#1a0a1a','#0a0a1a'],Kids:['#0a1a2d','#1a0a2d']};return m[cat]||['#0d1233','#1a0a3d'];}
 
-function renderCard(g){const bg=gbg(g.cat);const fav=favGames.has(g.id);
+function renderCard(g){const fav=favGames.has(g.id);
+const thumbHtml=g.thumb
+  ?`<img src="${g.thumb}" alt="${g.title}" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+  :'';
+const bg=gbg(g.cat);
 return`<div class="game-card" onclick="openGame(${JSON.stringify(g).replace(/"/g,'&quot;')})">
-<div class="gc-thumb"><div class="gc-placeholder" style="background:linear-gradient(135deg,${bg[0]},${bg[1]})">${g.emoji}</div>
+<div class="gc-thumb" style="position:relative;overflow:hidden">
+${thumbHtml}
+<div style="width:100%;height:100%;background:linear-gradient(135deg,${bg[0]},${bg[1]});display:${g.thumb?'none':'flex'};align-items:center;justify-content:center;font-size:42px;position:${g.thumb?'absolute':'relative'};top:0;left:0">🎮</div>
 <div class="gc-play-overlay"><div class="play-circle">▶</div></div>
 <div class="gc-fav ${fav?'liked':''}" onclick="event.stopPropagation();toggleFavCard(${g.id},this)">♥</div>
 ${g.badge?`<div class="gc-badge">${g.badge}</div>`:''}</div>
@@ -828,14 +834,18 @@ ${g.badge?`<div class="gc-badge">${g.badge}</div>`:''}</div>
 <div class="gc-meta"><span class="gc-cat">${g.cat}</span><span class="gc-rating">★ ${g.rating}</span></div></div></div>`;}
 
 function renderWide(g){const bg=gbg(g.cat);
+const thumbHtml=g.thumb
+  ?`<img src="${g.thumb}" alt="${g.title}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
+  :`<div style="font-size:36px">🎮</div>`;
 return`<div class="gc-wide" onclick="openGame(${JSON.stringify(g).replace(/"/g,'&quot;')})">
-<div class="gcw-thumb" style="background:linear-gradient(135deg,${bg[0]},${bg[1]})">${g.emoji}</div>
+<div class="gcw-thumb" style="background:linear-gradient(135deg,${bg[0]},${bg[1]});overflow:hidden;padding:0">${thumbHtml}</div>
 <div class="gcw-body"><div class="gcw-title">${g.title}</div><div class="gcw-desc">${g.desc}</div>
 <div class="gcw-foot"><span class="gc-cat">${g.cat}</span><span class="gcw-plays">▶ ${g.plays}</span><span class="gcw-rating">★ ${g.rating}</span></div></div></div>`;}
 
 function renderTrend(g,i){const r=i+1;const cls=r===1?'gold':r===2?'silver':r===3?'bronze':'';
 return`<div class="trend-item" onclick="openGame(${JSON.stringify(g).replace(/"/g,'&quot;')})">
-<div class="tr-rank ${cls}">${r}</div><div class="tr-thumb">${g.emoji}</div>
+<div class="tr-rank ${cls}">${r}</div>
+<div class="tr-thumb" style="overflow:hidden;padding:0">${g.thumb?`<img src="${g.thumb}" alt="${g.title}" style="width:100%;height:100%;object-fit:cover">`:'🎮'}</div>
 <div class="tr-info"><div class="tr-title">${g.title}</div><div class="tr-sub">${g.cat}</div></div>
 <div class="tr-plays">${g.plays}</div></div>`;}
 
@@ -874,8 +884,12 @@ function openGame(g){
 currentGame=g;showPage('game');
 document.getElementById('gameTitle').textContent=g.title;
 document.getElementById('gameCategory').textContent=g.cat;
-document.getElementById('gfEmoji').textContent=g.emoji;
+document.getElementById('gfEmoji').textContent=g.thumb?'':('🎮');
 document.getElementById('gfTitle').textContent=g.title;
+// Show thumbnail in loading screen
+const emojiEl=document.getElementById('gfEmoji');
+if(g.thumb){emojiEl.innerHTML=`<img src="${g.thumb}" alt="${g.title}" style="width:120px;height:90px;object-fit:cover;border-radius:12px;margin-bottom:4px">`;}
+else{emojiEl.textContent='🎮';}
 document.getElementById('gameDesc').textContent=g.desc;
 document.getElementById('gfPlaceholder').style.display='flex';
 document.getElementById('gameFrame').style.display='none';
@@ -885,7 +899,9 @@ document.getElementById('favBtn').textContent=favGames.has(g.id)?'♥ Favorited'
 document.querySelectorAll('.star').forEach(s=>s.classList.remove('filled'));
 document.querySelector('.rating-lbl').textContent='Tap to rate';
 const rel=games.filter(x=>x.id!==g.id&&(x.cat===g.cat||x.tags.some(t=>g.tags.includes(t)))).slice(0,4);
-document.getElementById('relatedGames').innerHTML=rel.map(r=>`<div class="trend-item" onclick="openGame(${JSON.stringify(r).replace(/"/g,'&quot;')})"><div class="tr-thumb">${r.emoji}</div><div class="tr-info"><div class="tr-title">${r.title}</div><div class="tr-sub">${r.cat} · ★ ${r.rating}</div></div></div>`).join('');
+document.getElementById('relatedGames').innerHTML=rel.map(r=>`<div class="trend-item" onclick="openGame(${JSON.stringify(r).replace(/"/g,'&quot;')})">
+<div class="tr-thumb" style="overflow:hidden;padding:0">${r.thumb?`<img src="${r.thumb}" alt="${r.title}" style="width:100%;height:100%;object-fit:cover">`:'🎮'}</div>
+<div class="tr-info"><div class="tr-title">${r.title}</div><div class="tr-sub">${r.cat} · ★ ${r.rating}</div></div></div>`).join('');
 window.scrollTo(0,0);}
 
 function startGame(){
