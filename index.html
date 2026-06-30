@@ -366,15 +366,88 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 .toast.success{border-color:var(--gz-green)}
 .toast-icon{font-size:16px}
 
-/* RESPONSIVE */
+/* RESPONSIVE - MOBILE FIRST OVERHAUL */
+
+/* Hamburger menu button - hidden on desktop */
+.hamburger-btn{display:none;width:36px;height:36px;border-radius:8px;align-items:center;justify-content:center;background:var(--gz-card);border:1px solid var(--gz-border);color:var(--gz-text);font-size:18px;flex-shrink:0;cursor:pointer}
+
+/* Sidebar overlay backdrop for mobile */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:998}
+.sidebar-overlay.active{display:block}
+
+/* Bottom mobile navigation bar */
+.mobile-bottom-nav{display:none}
+
 @media(max-width:900px){
-  .sidebar{transform:translateX(-220px)}.main{margin-left:0}
-  .game-page-layout{grid-template-columns:1fr}.featured-grid{grid-template-columns:1fr 1fr;height:auto}
-  .stats-grid{grid-template-columns:1fr 1fr}.hero-right{display:none}
+  .hamburger-btn{display:flex}
+  .nav-search{display:none}
+  .nav-btn{display:none}
+  .sidebar{transform:translateX(-100%);z-index:999;transition:transform .25s ease;width:260px;box-shadow:4px 0 24px rgba(0,0,0,.4)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .page{padding:16px 14px 90px}
+  .game-page-layout{grid-template-columns:1fr}
+  .featured-grid{grid-template-columns:1fr 1fr;height:auto;gap:10px}
+  .feat-main{grid-row:1;height:220px}
+  .feat-small{height:140px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .hero-right{display:none}
+  .hero{min-height:auto}
+  .hero-content{max-width:100%;padding:28px 20px}
+  .game-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .game-grid-wide{grid-template-columns:1fr}
+  footer{margin-left:0!important}
+  .mobile-bottom-nav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;z-index:900;
+    background:rgba(10,11,20,.97);backdrop-filter:blur(20px);
+    border-top:1px solid var(--gz-border);height:62px;
+    align-items:center;justify-content:space-around;
+    padding-bottom:env(safe-area-inset-bottom,0);
+  }
+  .light .mobile-bottom-nav{background:rgba(240,244,255,.97)}
+  .mnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--gz-text3);cursor:pointer;padding:6px 10px;border-radius:10px;transition:color .2s}
+  .mnav-item.active{color:var(--gz-blue)}
+  .mnav-icon{font-size:20px}
 }
+
 @media(max-width:600px){
-  .hero-h1{font-size:34px}.hero-content{padding:26px 22px}
-  .rewards-grid{grid-template-columns:repeat(4,1fr)}.stats-grid{grid-template-columns:1fr 1fr}
+  .nav-inner{padding:0 12px;gap:8px}
+  .logo{font-size:20px}
+  .logo-icon{width:30px;height:30px;font-size:15px}
+  .hero-h1{font-size:28px}
+  .hero-content{padding:22px 18px}
+  .hero-badge{font-size:11px;padding:4px 11px}
+  .hero-sub{font-size:13px}
+  .hero-actions{gap:8px}
+  .btn-play,.btn-ghost{padding:10px 18px;font-size:13px}
+  .hero-stats{flex-wrap:wrap;gap:0}
+  .rewards-grid{grid-template-columns:repeat(4,1fr)}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .game-grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px}
+  .gc-title{font-size:11.5px}
+  .section-title{font-size:17px}
+  .cat-scroll{gap:6px}
+  .cat-chip{padding:6px 11px;font-size:11px}
+  .ad-banner{min-height:60px;padding:8px}
+  footer > div{grid-template-columns:1fr 1fr!important;gap:20px!important}
+  footer{padding-bottom:80px!important}
+  .profile-header{flex-direction:column;text-align:center;padding:24px 18px}
+  .prof-stats{justify-content:center}
+  .modal{padding:24px 20px}
+  .game-controls{justify-content:center}
+}
+
+@media(max-width:400px){
+  .game-grid{grid-template-columns:repeat(2,1fr)}
+  footer > div{grid-template-columns:1fr!important}
+}
+
+/* Touch-friendly tap targets */
+@media(hover:none) and (pointer:coarse){
+  .game-card:active{transform:scale(.97)}
+  .gc-play-overlay{opacity:1;background:rgba(0,0,0,.25)}
+  .gc-fav{opacity:1}
+  .nav-btn,.cat-chip,.filter-btn,.ctrl-btn,.gc-ctrl{min-height:38px}
 }
 </style>
 </head>
@@ -400,6 +473,7 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 <!-- NAVBAR -->
 <nav class="navbar">
 <div class="nav-inner">
+  <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
   <div class="logo" onclick="showPage('home')">
     <div class="logo-icon">G</div>
     <span class="logo-text">GameZoro</span>
@@ -419,10 +493,23 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 </div>
 </nav>
 
+<!-- SIDEBAR OVERLAY FOR MOBILE -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mobile-bottom-nav">
+  <div class="mnav-item active" data-page="home" onclick="showPage('home')"><span class="mnav-icon">🏠</span>Home</div>
+  <div class="mnav-item" data-page="search" onclick="showPage('search')"><span class="mnav-icon">🔍</span>Games</div>
+  <div class="mnav-item" data-page="leaderboard" onclick="showPage('leaderboard')"><span class="mnav-icon">🏆</span>Top</div>
+  <div class="mnav-item" data-page="rewards" onclick="showPage('rewards')"><span class="mnav-icon">🎁</span>Rewards</div>
+  <div class="mnav-item" data-page="profile" onclick="showPage('profile')"><span class="mnav-icon">👤</span>Profile</div>
+</div>
+
 <!-- LAYOUT -->
 <div class="layout">
-<aside class="sidebar">
+<aside class="sidebar" id="mainSidebar">
   <div class="sidebar-label">Navigation</div>
+
   <div class="sidebar-item active" data-page="home" onclick="showPage('home');setActive(this)">🏠 Home</div>
   <div class="sidebar-item" data-page="search" onclick="showPage('search');setActive(this)">🔍 All Games</div>
   <div class="sidebar-item" data-page="leaderboard" onclick="showPage('leaderboard');setActive(this)">🏆 Leaderboard</div>
@@ -925,8 +1012,19 @@ function shareGame(){navigator.clipboard.writeText(window.location.href).then(()
 function setRating(n){document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('filled',i<n));document.querySelector('.rating-lbl').textContent=`You rated: ${n}/5 ★`;showToast(`Rated ${n} stars! ★`,'success');}
 function addComment(){const inp=document.getElementById('commentInput');if(!inp||!inp.value.trim())return;const name=userLoggedIn?userName:'Guest';const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);const item=document.createElement('div');item.className='comment-item';item.innerHTML=`<div class="avatar" style="background:rgba(59,130,246,.2);color:var(--gz-blue)">${initials}</div><div class="comment-body"><div class="comment-user">${name}</div><div class="comment-text">${inp.value}</div><div class="comment-time">Just now · 👍 0</div></div>`;document.getElementById('commentList').prepend(item);inp.value='';showToast('Comment posted!','success');}
 
-function showPage(p){document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));const el=document.getElementById('page-'+p);if(el)el.classList.add('active');document.querySelectorAll('.sidebar-item[data-page]').forEach(i=>i.classList.toggle('active',i.dataset.page===p));if(p==='search')initSearch();if(p==='home')initHome();window.scrollTo(0,64);}
 function setActive(el){document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');}
+
+function toggleSidebar(){
+  document.getElementById('mainSidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+function closeSidebar(){
+  document.getElementById('mainSidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('active');
+}
+function setMobileNavActive(p){
+  document.querySelectorAll('.mnav-item').forEach(i=>i.classList.toggle('active',i.dataset.page===p));
+}
 
 function showToast(msg,type){const c=document.getElementById('toastCont');const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=`<span class="toast-icon">${type==='success'?'✓':'ℹ'}</span>${msg}`;c.appendChild(t);setTimeout(()=>t.remove(),3000);}
 function fakeLogin(p){userLoggedIn=true;userName=p==='Email'?'Player One':`${p} User`;document.getElementById('authModal').style.display='none';document.getElementById('authBtn').style.display='none';document.getElementById('profileBtn').style.display='flex';document.getElementById('coinsEl').style.display='flex';document.getElementById('profName').textContent=userName;document.getElementById('profAvatar').textContent=userName.slice(0,2).toUpperCase();showToast(`Welcome, ${userName}! 🎮`,'success');}
@@ -964,10 +1062,8 @@ function showPage(p){
 document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));
 const el=document.getElementById('page-'+p);if(el)el.classList.add('active');
 document.querySelectorAll('.sidebar-item[data-page]').forEach(i=>i.classList.toggle('active',i.dataset.page===p));
-// Hide footer on legal pages, show on main pages
-const legalPages=['about','privacy','terms','contact','dmca'];
-const footer=document.getElementById('mainFooter');
-if(footer)footer.style.marginLeft=legalPages.includes(p)?'220px':'220px';
+setMobileNavActive(p);
+closeSidebar();
 if(p==='search')initSearch();
 if(p==='home')initHome();
 window.scrollTo(0,64);}
