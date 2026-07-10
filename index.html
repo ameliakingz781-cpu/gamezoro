@@ -9,14 +9,6 @@
   gtag('js', new Date());
   gtag('config', 'G-Q4P6MLBJ1R');
 </script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3TN6XY62CD"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-3TN6XY62CD');
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GameZoro - Play Free HTML5 Games Online</title>
@@ -1093,6 +1085,45 @@ if(p==='home')initHome();
 window.scrollTo(0,64);}
 
 initHome();showPage('home');
+
+// ===== URL ROUTER for robots.txt / sitemap.xml / llms.txt =====
+(function(){
+  const path=window.location.pathname;
+  if(path==='/robots.txt'){
+    document.open();
+    document.write('User-agent: *\nAllow: /\n\nSitemap: https://gamezoro.online/sitemap.xml');
+    document.close();
+    return;
+  }
+  if(path==='/sitemap.xml'){
+    const games_list=[
+      'om-nom-run','monster-survivors','minecraft',
+      'tung-tung-sahur-vs-zomby','fortnite-hidden-items',
+      'highway-rush','zombie-quell-3d','weapon-run',
+      'cute-pony-puzzle-quest','dont-get-caught',
+      'fishing-hunting-game','roblox-craft-run',
+      'bts-roblox-coloring','superhero-hammer-man',
+      'action-game'
+    ];
+    const today=new Date().toISOString().split('T')[0];
+    let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    xml+=`<url><loc>https://gamezoro.online/</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>\n`;
+    games_list.forEach(g=>{
+      xml+=`<url><loc>https://gamezoro.online/#${g}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
+    });
+    xml+=`</urlset>`;
+    document.open('application/xml');
+    document.write(xml);
+    document.close();
+    return;
+  }
+  if(path==='/llms.txt'){
+    document.open();
+    document.write(`# GameZoro\n\n> GameZoro is a free online HTML5 gaming platform.\n\nPlay 100+ licensed games instantly in your browser.\nNo download, no signup required.\n\n## URL\nhttps://gamezoro.online\n\n## Contact\ncontact@gamezoro.online`);
+    document.close();
+    return;
+  }
+})();
 </script>
 
 <!-- ABOUT PAGE -->
